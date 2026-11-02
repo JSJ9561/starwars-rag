@@ -69,14 +69,19 @@ TXT → XML → JSON Chunking → BGE-M3 Embedding → FAISS IndexFlatIP
 - `starwars.index`: 151개 벡터를 등록한 FAISS 검색 인덱스 저장
 - FAISS 검색 결과의 벡터 번호를 `chunks.json`의 항목 순서와 연결하여 원문과 출처를 확인하는 구조
 
-**질문 처리 과정 (구현 예정)**
+**질문 처리 과정 (2단계 검색 기능 완료)**
 
 ```text
-User Question → BGE-M3 Query Embedding → FAISS Top-k Search
-              → Context Retrieval → LLM → Answer
+User Question → BGE-M3 Query Embedding → FAISS Top-k Search → Context Retrieval
 ```
 
-검색된 문서를 LLM의 입력 문맥으로 제공하여 데이터에 근거한 답변 생성을 목표로 합니다. 실제 질문의 검색 정확도와 한국어 고유명사 처리는 다음 단계에서 검증할 예정입니다.
+**답변 생성 과정 (3단계 예정)**
+
+```text
+Context Retrieval → LLM → Answer
+```
+
+한국어 및 영어 질문을 BGE-M3로 임베딩하고, FAISS Top-k 검색을 통해 관련 청크의 본문과 출처를 확인하는 기능을 구현했습니다. 검색된 문서를 활용한 LLM 답변 생성은 다음 단계에서 구현할 예정입니다.
 
 ## 5. 프로젝트 구조
 
@@ -96,7 +101,8 @@ starwars-rag/
 │   ├── txt_to_xml.py           # TXT → XML 변환
 │   ├── xml_chunker.py          # XML → JSON 청킹
 │   ├── embed_chunks.py         # BGE-M3 임베딩
-│   └── build_vector_index.py   # FAISS 인덱스 생성 및 저장
+│   ├── build_vector_index.py   # FAISS 인덱스 생성 및 저장
+│   └── search_vector.py        # FAISS 의미 검색 및 결과 출력
 ├── models/                     # 모델 캐시 (Git 제외)
 ├── venv/                       # Python 가상환경 (Git 제외)
 ├── .gitignore
@@ -120,11 +126,12 @@ starwars-rag/
 - [x] BGE-M3 임베딩 및 `embeddings.npy` 저장
 - [x] FAISS `IndexFlatIP` 생성 및 `starwars.index` 저장
 
-**2단계 — 검색 기능 구현 (예정)**
+**2단계 — 검색 기능 구현 (완료)**
 
-- [ ] 사용자 질문 임베딩 및 FAISS Top-k 검색
-- [ ] 검색 결과와 원본 청크·출처 연결
-- [ ] 한국어 고유명사 검색 정확도 검증 및 검색 설정 조정
+- [x] 사용자 질문 임베딩 및 FAISS Top-k 검색
+- [x] 검색 결과와 원본 청크·출처 연결
+- [x] 한국어·영어 질문 기본 검색 검증
+- [x] 터미널 기반 사용자 질문 입력
 
 **3~5단계 — 챗봇 서비스 구현 (예정)**
 

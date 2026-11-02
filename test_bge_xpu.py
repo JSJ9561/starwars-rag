@@ -1,13 +1,15 @@
 ﻿import torch
 from sentence_transformers import SentenceTransformer
-
+from pathlib import Path
 assert torch.xpu.is_available(), "XPU를 사용할 수 없습니다."
+
+project_root = Path(__file__).resolve().parent
 
 # BGE-M3 모델 로딩
 model = SentenceTransformer(
     "BAAI/bge-m3",
     device="xpu",
-    cache_folder="models"
+    cache_folder=str(project_root / 'models')
 )
 
 # 한국어 및 영어 문장 임베딩

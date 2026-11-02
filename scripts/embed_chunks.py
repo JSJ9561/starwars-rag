@@ -25,7 +25,7 @@ if npy_path.exists():
 model = SentenceTransformer(
     'BAAI/bge-m3',
     device = 'xpu',
-    cache_folder='models'
+    cache_folder=str(project_root / 'models')
 )
 
 # 전체 청크 임베딩
