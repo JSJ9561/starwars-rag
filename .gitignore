@@ -30,3 +30,7 @@ chroma_db/
 # 운영체제 임시파일
 Thumbs.db
 .DS_Store
+
+# API 테스트 파일 제외
+scripts/test_gemini_api.py
+scripts/test_groq_api.py
