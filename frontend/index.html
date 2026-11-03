@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Wars Archives | Episode III</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- 상단 헤더 -->
+        <header class="app-header">
+            <div class="brand">
+                <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Star_Wars_Logo.svg"
+                    alt="STAR WARS"
+                    class="brand-logo"
+                >
+
+                <div class="brand-text">
+                    <h1>ARCHIVES</h1>
+                    <p>Episode III: Revenge of the Sith</p>
+                </div>
+            </div>
+
+            <button id="reset-button" type="button">
+                새 대화
+            </button>
+        </header>
+
+        <!-- 대화 영역 -->
+        <main class="chat-container">
+            <section
+                id="chat-messages"
+                class="chat-messages"
+                role="log"
+                aria-label="대화 내용"
+                aria-live="polite"
+            >
+                <div class="welcome-message">
+                    <h2>스타워즈 아카이브</h2>
+                    <p>
+                        영화 에피소드 III: 시스의 복수에 관한
+                        질문을 입력해 보세요.
+                    </p>
+                    <p>
+                        검색된 자료를 바탕으로 답변하고
+                        참고 문서를 함께 제공합니다.
+                    </p>
+                </div>
+            </section>
+        </main>
+
+        <!-- 질문 입력 영역 -->
+        <footer class="chat-footer">
+            <p
+                id="status-message"
+                role="status"
+                aria-live="polite"
+            ></p>
+
+            <form id="chat-form" class="chat-form">
+                <label for="question-input" class="input-label">
+                    질문 입력
+                </label>
+
+                <textarea
+                    id="question-input"
+                    name="query"
+                    placeholder="스타워즈에 대해 질문하세요..."
+                    rows="1"
+                    required
+                ></textarea>
+
+                <div class="input-toolbar">
+
+                    <!-- LLM 모델 선택 -->
+                    <div class="model-selector">
+                        <label for="model-select">AI 모델</label>
+
+                        <select id="model-select" name="model_choice">
+                            <option value="groq">groq</option>
+                            <option value="gemini_lite">gemini 3.5 lite</option>
+                            <option value="gemini_flash">gemini 3.8 flash</option>
+                        </select>
+                    </div>
+
+                    <!-- 질문 전송 -->
+                    <button id="send-button" type="submit">
+                        전송
+                    </button>
+                </div>
+            </form>
+
+            <p class="footer-notice">
+                Enter 전송 · Shift + Enter 줄바꿈
+            </p>
+            <p class="footer-notice">
+                Star Wars Databank 기반 RAG 챗봇
+            </p>
+        </footer>
+
+    </div>
+</body>
+</html>
