@@ -16,7 +16,7 @@
 
 ## 2. 원본 데이터 구성
 
-기준 자료: 최종 `sample.txt`
+기준 자료: 최신 `sample.txt` (영화 공식 소개문 포함)
 
 실제 프로그램 입력 경로: `data/sample.txt`
 
@@ -28,13 +28,14 @@
 | Locations | 20 |
 | Organizations | 17 |
 | Vehicles | 21 |
-| **Total** | **142** |
+| Short Plot | 1 |
+| **Total** | **143** |
 
 별도로 `Character Specific`에 주요 인물 9명의 관계 기록이 존재한다.
 
 관계 데이터는 28개 속성 줄로 구성되며, 쉼표로 구분된 복수 대상을 개별 관계로 펼치면 총 39개의 관계가 된다.
 
-`Character Specific`은 백과사전의 일곱 번째 일반 분류가 아니라 별도 관계 데이터 영역으로 취급한다.
+`Character Specific`은 일반 분류가 아니라 별도 관계 데이터 영역으로 취급한다. 일반 항목은 기존 백과사전 설명 142건과 영화 공식 소개문(`Short Plot`) 1건으로 구성한다.
 
 ## 3. TXT 파싱 규칙
 
@@ -49,6 +50,7 @@
 - `Organizations`
 - `Vehicles`
 - `Character Specific`
+- `Short Plot`
 
 분류 제목은 개별 항목에 포함하지 않는다.
 
@@ -73,12 +75,17 @@ source: https://www.starwars.com/databank/...
 다음 항목 이름
 다음 항목 설명
 source: https://www.starwars.com/databank/...
+
+Short Plot 분류의 경우:
+Revenge of the Sith – Synopsis
+공식 영화 소개문
+source: https://www.starwars.com/films/star-wars-episode-iii-revenge-of-the-sith
 ```
 
 파싱 기준:
 
 1. 첫 번째 줄을 항목 이름으로 인식한다.
-2. 마지막 `source:` 줄에서 Star Wars Databank URL을 추출한다.
+2. 마지막 `source:` 줄에서 공식 출처 URL을 추출한다. 일반 백과사전은 Databank, `Short Plot`은 공식 영화 페이지 URL이다.
 3. 이름과 `source:` 사이의 줄을 설명으로 인식하고, 여러 줄이면 원래 순서대로 결합한다.
 4. 원문 내용과 영문 표기를 보존하며, 이름·설명·출처 누락 여부를 검증한다.
 
@@ -132,7 +139,7 @@ XML은 일반 백과사전 항목과 주요 인물 관계를 별도 영역으로
 </star_wars_encyclopedia>
 ```
 
-위 XML은 구조 설명을 위한 예시이며, 실제 `starwars.xml`에는 일반 분류 6개와 항목 142개가 포함된다.
+위 XML은 구조 설명을 위한 예시이며, 실제 `starwars.xml`에는 일반 분류 7개와 항목 143개가 포함된다. `Short Plot`도 `<entries>` 아래의 `<category name="Short Plot">`에 저장된다.
 
 각 요소의 역할은 다음과 같다.
 
@@ -145,12 +152,12 @@ XML은 일반 백과사전 항목과 주요 인물 관계를 별도 영역으로
 | `id` | 항목의 고유 식별자 |
 | `name` | 원본 항목 이름 |
 | `description` | 원본 설명문 |
-| `source` | Star Wars Databank 출처 (`name`, `url` 속성) |
+| `source` | 공식 출처의 이름과 URL (`name`, `url` 속성) |
 | `character_specific` | 별도 인물 관계 영역 |
 | `character` | 관계의 주체인 인물 (`name` 속성) |
 | `relation` | 관계 유형과 대상 (`type`, `target` 속성) |
 
-항목 ID는 분류와 항목 순번을 조합하여 생성한다. 같은 XML 안에서 중복되어서는 안 된다. 원본 항목 순서가 달라지면 순번 기반 ID도 달라질 수 있으므로 데이터 갱신 시 확인한다.
+항목 ID는 분류와 항목 순번을 조합하여 생성한다. 현재 `Short Plot` 항목의 ID는 `short plot-001`이며, 분류명을 소문자로 바꿀 때 포함된 공백이 그대로 유지된다. 같은 XML 안에서 중복되어서는 안 된다. 원본 항목 순서가 달라지면 순번 기반 ID도 달라질 수 있으므로 데이터 갱신 시 확인한다.
 
 ### 4.2. 인물 관계
 
@@ -182,27 +189,27 @@ XML은 일반 백과사전 항목과 주요 인물 관계를 별도 영역으로
 - 입력 파일의 항목 순서를 유지한다.
 - 원본에 없는 관계나 배경지식을 추가하지 않는다.
 
-일반 항목은 XML의 `<source>` 요소에 Databank 출처 이름과 URL을 기록한다. 인물 관계 영역에는 별도의 출처 URL이 지정되어 있지 않다.
+일반 항목과 `Short Plot`은 XML의 `<source>` 요소에 출처 이름과 URL을 기록한다. 현재 변환 스크립트는 모든 `<source>`의 `name`에 `Star Wars Databank`를 고정 사용하므로, `Short Plot`의 출처 종류는 실제 `url` 값(공식 영화 페이지)으로 구분해야 한다. 인물 관계 영역에는 별도의 출처 URL이 지정되어 있지 않다.
 
 청킹 결과인 `chunks.json`은 다음 필드를 사용한다.
 
 | 필드 | 내용 |
 |---|---|
-| `id` | 청크 고유 식별자 (`characters-001`, `relations-001` 등) |
+| `id` | 청크 고유 식별자 (`characters-001`, `short plot-001`, `relations-001` 등) |
 | `category` | 일반 분류 또는 `Character Specific` |
 | `name` | 항목 이름 또는 관계 주체의 이름 |
 | `text` | 임베딩에 사용하는 이름과 설명/관계 문자열 |
-| `source_url` | 일반 항목의 Databank URL, 인물 관계에서는 `null` |
+| `source_url` | 일반 항목의 Databank URL, `Short Plot`의 공식 영화 URL, 인물 관계에서는 `null` |
 
 입력 TXT 파일 경로는 변환 프로그램 설정으로 관리하며, `chunks.json`의 개별 필드에는 저장하지 않는다. 출처 URL이 없는 경우 임의로 생성하지 않는다.
 
-챗봇에서는 가능한 경우 Databank URL을 제시하고, URL이 없는 관계 청크는 해당 관계가 별도 정리 자료임을 구분해야 한다.
+챗봇에서는 가능한 경우 공식 출처 URL을 제시하고, URL이 없는 관계 청크는 별도 정리 자료임을 구분해야 한다.
 
 ## 6. 청킹 원칙
 
 ### 6.1. 일반 설명
 
-기본적으로 **백과사전 항목 1개를 청크 1개로 처리**한다.
+기본적으로 **설명 항목 1개(백과사전 또는 영화 공식 소개문)를 청크 1개로 처리**한다.
 
 청크에는 항목 이름과 설명을 함께 포함한다.
 
@@ -213,7 +220,7 @@ Anakin Skywalker
 원본 설명
 ```
 
-분류(`Characters`)와 출처 URL은 본문에 별도 접두어로 넣지 않고 청크 메타데이터에 저장한다.
+분류(`Characters`, `Short Plot` 등)와 출처 URL은 본문에 별도 접두어로 넣지 않고 청크 메타데이터에 저장한다. `Short Plot` 청크는 전체 대본이나 장면별 줄거리가 아니라 공식 영화 소개문 한 건만 포함한다.
 
 청크를 생성할 때 다음을 확인한다.
 
@@ -251,25 +258,27 @@ piloted: Eta-2 Jedi Starfighter
 | 청크 유형 | 개수 |
 |---|---:|
 | 백과사전 설명 | 142 |
+| 영화 공식 소개문 (`Short Plot`) | 1 |
 | 인물 관계 | 9 |
-| **총합** | **151** |
+| **총합** | **152** |
 
-현재는 일반 항목별·인물별 추가 분할 없이 청크를 생성했다. 이 151개 청크는 BGE-M3로 각각 1024차원 벡터로 변환되어 `embeddings.npy`에 저장되며, 동일한 순서로 FAISS 인덱스에 등록된다. 토큰 길이와 검색 품질에 따른 추가 분할은 향후 검토 사항이다.
+현재는 설명 항목별·인물별 추가 분할 없이 청크를 생성했다. 이 152개 청크는 BGE-M3로 각각 1024차원 벡터로 변환되어 `embeddings.npy`에 저장되며, 동일한 순서로 FAISS 인덱스에 등록된다. 토큰 길이와 검색 품질에 따른 추가 분할은 향후 검토 사항이다.
 
 ## 7. XML 변환 검증 기준
 
-변환 및 후속 데이터 구축 결과에서 다음 사항을 확인한다.
+변환 및 후속 데이터 구축 결과에서 다음 사항을 확인한다. 아래 표는 검증 기준이며, 모든 항목이 변환 스크립트 안에서 자동 검증되는 것은 아니다.
 
 | 검증 항목 | 기대 결과 |
 |---|---|
-| 일반 분류 개수 | 6개 |
-| 일반 항목 개수 | 142개 |
+| 일반 분류 개수 | 7개 |
+| 일반 항목 개수 | 143개 |
 | Characters | 63개 |
 | Creatures | 3개 |
 | Droids | 18개 |
 | Locations | 20개 |
 | Organizations | 17개 |
 | Vehicles | 21개 |
+| Short Plot | 1개 |
 | Character Specific 주체 | 9명 |
 | 관계 속성 원본 줄 | 28개 |
 | 개별 관계로 분리한 결과 | 39개 |
@@ -302,8 +311,8 @@ piloted: Eta-2 Jedi Starfighter
 
 - `data/sample.txt`: 최종 원본 데이터
 - `data/starwars.xml`: XML 변환 결과
-- `data/chunks.json`: 151개 청크와 메타데이터
-- `data/embeddings.npy`: BGE-M3 임베딩 배열 (`151 × 1024`, `float32`)
+- `data/chunks.json`: 152개 청크와 메타데이터
+- `data/embeddings.npy`: BGE-M3 임베딩 배열 (`152 × 1024`, `float32`)
 - `data/starwars.index`: FAISS `IndexFlatIP` 검색 인덱스
 - `docs/xml-schema.md`: 구조 및 검증 기준
 - `scripts/txt_to_xml.py`: TXT → XML 변환 프로그램
@@ -315,7 +324,7 @@ piloted: Eta-2 Jedi Starfighter
 
 ## 9. 향후 검토 사항
 
-XML 변환·청킹·임베딩·FAISS 인덱스 구축을 완료했으며, 다음 항목은 검색 및 답변 단계에서 검토한다.
+XML 변환·청킹·임베딩·FAISS 인덱스 구축 및 웹 챗봇 연결을 완료했으며, 다음 항목은 검색·답변 품질 개선 시 검토한다.
 
 - BGE-M3 토크나이저 기반 청크 길이 측정 및 추가 분할 필요성
 - 한국어 질문과 영문 고유명사 간 검색 정확도
@@ -324,4 +333,4 @@ XML 변환·청킹·임베딩·FAISS 인덱스 구축을 완료했으며, 다음
 - 청크 중복 여부 및 FAISS Top-k 검색 결과 평가
 - 실제 질문에 대한 RAG 답변의 전거 충실도
 
-추가 세부 주제 분류는 초기 단계에서 도입하지 않는다. 기본 6개 분류만으로 검색 평가를 진행한 뒤 필요성이 확인되면 검토한다.
+현재 7개 일반 분류를 유지하며, 더 세분화된 분류 체계는 검색 평가에서 필요성이 확인될 경우 검토한다.

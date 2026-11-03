@@ -14,7 +14,8 @@ categories = [
     'Locations',
     'Organizations',
     'Vehicles',
-    'Character Specific'
+    'Character Specific',
+    'Short Plot'
 ]
 
 # 분류 제목과 빈 줄을 기준으로 항목 구분
